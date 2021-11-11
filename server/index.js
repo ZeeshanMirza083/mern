@@ -1,22 +1,31 @@
-const express = require('express')
-var cors = require('cors')
-const app = express()
-const port = 4000
-
-app.use(cors())
-
-const arr = [
-    { id: 1, name: 'zeeshan', city: 'zafarwal' },
-    { id: 2, name: 'ali', city: 'narowal' },
-    { id: 3, name: 'rizwan', city: 'sadaqabad' },
-    { id: 4, name: 'gilman', city: 'lahore' },
-    { id: 5, name: 'rehan', city: 'shaikhupura' },
-]
+const express = require('express');
+const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 app.get('/', (req, res) => {
-    res.json(arr)
-})
+    res.sendFile(__dirname + '/index.html');
+});
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
-})
+io.on('connection', (socket) => {
+    console.log('a user connected');
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+
+    socket.on('join', function (room) {
+        let game = new Game();
+        console.log('new game created....');
+    });
+
+});
+
+server.listen(3000, () => {
+    console.log('listening on *:3000');
+});
+
+class Game {
+    arr = [null, null, null, null, null, null]
+}
